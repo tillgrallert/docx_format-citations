@@ -20,12 +20,14 @@
     xmlns:wps="http://schemas.microsoft.com/office/word/2010/wordprocessingShape"
     xmlns:till="http://www.sitzextase.de">
 
-    <xsl:output method="xml" encoding="UTF-8" indent="yes" version="1.0"/>
+    <xsl:output method="xml" encoding="UTF-8" indent="yes" version="1.0" />
 
     <!-- this stylesheet takes a microsoft word .docx file as input, searches all text nodes (w:t) for Sente citation IDs wrapped in curly braces and returns the correctly formatted reference based on a master XML file containing the Sente library defined through pgLibrary -->
 
-    <!-- PROBLEM: the formatting of bibliographies does not yet deal with the issue of Ayalon 2000a, Ayalon 2000b in all instances. In mode 'fn2' this won't be a problem, but in 'fn' things are still awry -->
+    <!-- PROBLEM: the formatting of bibliographies does not yet deal with the issue of Ayalon 2000a, Ayalon 2000b in all instances. In mode 'fn2' this won't be a problem, but in 'fn' things are still awry
+        - Update: as the current formatting in both fn modes includes information on the title, there are letters to be appended to the publication date -->
 
+    <!-- v4: as Word cannot deal with mmd marks for italics and bold text, I had to introduce a new marker to the funcStringTextDecoration -->
     <!-- IDEA for v4: instead of reproducing a specific XML tree, I could treat the input as a literal string through the unparsed-text() function -->
 
     <!-- v3a: due to applying the formatting always to individual references and not reference groups, all fancy tricks for shortening the references are lost.-->
@@ -42,10 +44,16 @@
 
 
 
-    <xsl:include href="/BachUni/projekte/XML/Functions/BachFunctions v3.xsl"/>
+    <xsl:include href="../Functions/BachFunctions v3.xsl"/>
 
-    <xsl:param name="pgLibrary"
-        select="document('/BachUni/projekte/XML/Sente XML exports/all/sources 140310.xml')"/>
+    <!--<xsl:param name="pgLibrarySources"
+        select="document('/BachUni/projekte/XML/Sente XML exports/all/SourcesClean 140401.xml')"/>
+    <xsl:param name="pgLibrarySecondary"
+        select="document('/BachUni/projekte/XML/Sente XML exports/all/SecondaryLitAmended 140401.xml')"/>-->
+    <xsl:param name="pgLibrarySources"
+        select="$pgSources"/>
+    <xsl:param name="pgLibrarySecondary"
+        select="$pgSecondary"/>
     <!-- toggles between two modes: mSources and mSecondary -->
     <xsl:param name="pgMode" select="'mSecondary'"/>
 
@@ -76,8 +84,11 @@
         <xsl:result-document
             href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempFootnotesXml.xml"
             method="xml">
-            <xsl:text>&lt;?xml-stylesheet type="text/xsl" href="../../DocxFinaliseCitations%20v1.xsl"?&gt;</xsl:text>
-            <xsl:apply-templates mode="mFn"/>
+            <xsl:text disable-output-escaping="yes">&lt;?xml-stylesheet type="text/xsl" href="../../DocxFinaliseCitations%20v2.xsl"?&gt;</xsl:text>
+<!--            <xsl:variable name="vClean">
+                <xsl:apply-templates mode="mFn"/>
+            </xsl:variable>-->
+            <xsl:apply-templates mode="mFn2"/>
         </xsl:result-document>
     </xsl:template>
 
@@ -93,7 +104,8 @@
             <xsl:apply-templates select="@*" mode="mRep"/>
         </xsl:copy>
     </xsl:template>
-
+    
+    <!-- mode mFn has been disabled -->
     <xsl:template match="node()" mode="mFn">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" mode="mFn"/>
@@ -105,10 +117,72 @@
             <xsl:apply-templates select="@*" mode="mFn"/>
         </xsl:copy>
     </xsl:template>
-
-    <xsl:template match="w:t" mode="mFn">
+    <xsl:template match="node()" mode="mFn2">
+        <xsl:copy>
+            <xsl:apply-templates select="@* | node()" mode="mFn2"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="@*" mode="mFn2">
+        <xsl:copy>
+            <xsl:apply-templates select="@*" mode="mFn2"/>
+        </xsl:copy>
+    </xsl:template>
+    
+    <xsl:template match="w:p[parent::w:footnote]" mode="mFn">
         <xsl:copy>
             <xsl:apply-templates select="@*" mode="mFn"/>
+            <xsl:apply-templates select="node()[not(self::w:r[child::w:t])]" mode="mFn"/>
+            <xsl:variable name="vFn">
+                <xsl:for-each select="child::w:r[child::w:t]">
+                    <xsl:choose>
+                        <!-- italics -->
+                        <xsl:when test="./w:rPr/w:i">
+                            <!--<xsl:copy>
+                            <xsl:apply-templates select="@* | node()" mode="mFn"/>
+                        </xsl:copy>-->
+                            <![CDATA[<w:r w:rsidRPr="00F9512">
+                        <w:rPr>
+                            <w:rFonts w:ascii="Gentium Plus" w:hAnsi="Gentium Plus"/>
+                            <w:i/>
+                            <w:noProof/>
+                            <w:sz w:val="18"/>
+                            <w:szCs w:val="18"/>
+                        </w:rPr>
+                        <w:t xml:space="preserve">]]><xsl:value-of select="./w:t"/><![CDATA[</w:t></w:r>]]>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:if test="position()=1"><![CDATA[<w:r w:rsidRPr="00F9512">
+                        <w:rPr>
+                            <w:rFonts w:ascii="Gentium Plus" w:hAnsi="Gentium Plus"/>
+                            <w:noProof/>
+                            <w:sz w:val="18"/>
+                            <w:szCs w:val="18"/>
+                        </w:rPr>
+                        <w:t xml:space="preserve">]]></xsl:if>
+                            <xsl:if test="preceding-sibling::w:r[1][./w:rPr/w:i]"><![CDATA[<w:r w:rsidRPr="00F9512">
+                        <w:rPr>
+                            <w:rFonts w:ascii="Gentium Plus" w:hAnsi="Gentium Plus"/>
+                            <w:noProof/>
+                            <w:sz w:val="18"/>
+                            <w:szCs w:val="18"/>
+                        </w:rPr>
+                        <w:t xml:space="preserve">]]></xsl:if>
+                            <xsl:value-of select="./w:t"/>
+                            <xsl:if test="following-sibling::w:r[1][./w:rPr/w:i]"><![CDATA[</w:t></w:r>]]></xsl:if>
+                            <xsl:if test="position()=last()"><![CDATA[</w:t></w:r>]]></xsl:if>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </xsl:for-each>
+            </xsl:variable>
+            <xsl:value-of select="$vFn" disable-output-escaping="yes"/>
+        </xsl:copy>
+    </xsl:template>
+    
+
+    <xsl:template match="w:t" mode="mFn2">
+        <xsl:copy>
+            <xsl:apply-templates select="@*" mode="mFn2"/>
             <xsl:variable name="vText" select="."/>
             <xsl:variable name="vFnId" select="ancestor::w:footnote/@w:id"/>
             <xsl:variable name="vRId"
@@ -214,7 +288,7 @@
                         <xsl:apply-templates select="@*" mode="mFn"/>
                         <xsl:attribute name="date">
                             <xsl:for-each
-                                select="$pgLibrary/tss:senteContainer/tss:library/tss:references/tss:reference[./tss:characteristics/tss:characteristic[@name='Citation identifier']=$vCitId]">
+                                select="$pgLibrarySecondary/tss:senteContainer/tss:library/tss:references/tss:reference[./tss:characteristics/tss:characteristic[@name='Citation identifier']=$vCitId]">
                                 <xsl:value-of
                                     select="concat(./tss:dates/tss:date[@type='Publication']/@year,'-',format-number(./tss:dates/tss:date[@type='Publication']/@month,'00'),'-',format-number(./tss:dates/tss:date[@type='Publication']/@day,'00'))"
                                 />
@@ -274,7 +348,8 @@
                                     <xsl:with-param name="pCitID" select="@citation"/>
                                     <xsl:with-param name="pMode" select="'fn'"/>
                                     <xsl:with-param name="pCitedPages" select="@pages"/>
-                                    <xsl:with-param name="pLibrary" select="$pgLibrary"/>
+                                    <xsl:with-param name="pLibrary" select="$pgLibrarySecondary"/>
+                                    <xsl:with-param name="pOutputFormat" select="'docx'"/>
                                 </xsl:call-template>
                             </xsl:when>
                             <xsl:when test="@position='following'">
@@ -282,15 +357,25 @@
                                     <xsl:with-param name="pCitID" select="@citation"/>
                                     <xsl:with-param name="pMode" select="'fn2'"/>
                                     <xsl:with-param name="pCitedPages" select="@pages"/>
-                                    <xsl:with-param name="pLibrary" select="$pgLibrary"/>
+                                    <xsl:with-param name="pLibrary" select="$pgLibrarySecondary"/>
+                                    <xsl:with-param name="pOutputFormat" select="'docx'"/>
                                 </xsl:call-template>
                             </xsl:when>
                             <xsl:when test="@position='ibid'">
-                                <xsl:text>Ibid.</xsl:text>
+                                <xsl:choose>
+                                    <xsl:when test="position()=1">
+                                        <xsl:text>Ibid.</xsl:text>
+                                    </xsl:when>
+                                    <xsl:otherwise>ibid.</xsl:otherwise>
+                                </xsl:choose>
                                 <!-- missing information on cited pages -->
                                 <xsl:if test="@pages!=''">
                                     <xsl:text>:</xsl:text>
                                     <xsl:value-of select="@pages"/>
+                                </xsl:if>
+                                <!-- if not the last in the refGroup -->
+                                <xsl:if test="position()!=last()">
+                                    <xsl:text>, </xsl:text>
                                 </xsl:if>
                             </xsl:when>
                         </xsl:choose>
@@ -319,7 +404,8 @@
                             <xsl:call-template name="funcCitation">
                                 <xsl:with-param name="pCitID" select="."/>
                                 <xsl:with-param name="pMode" select="'fn'"/>
-                                <xsl:with-param name="pLibrary" select="$pgLibrary"/>
+                                <xsl:with-param name="pLibrary" select="$pgLibrarySources"/>
+                                <xsl:with-param name="pOutputFormat" select="'docx'"/>
                             </xsl:call-template>
                         </xsl:otherwise>
                     </xsl:choose>
