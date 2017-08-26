@@ -26,6 +26,7 @@
 
     <!-- PROBLEM: the formatting of bibliographies does not yet deal with the issue of Ayalon 2000a, Ayalon 2000b in all instances. In mode 'fn2' this won't be a problem, but in 'fn' things are still awry -->
 
+    <!-- v4: as Word cannot deal with mmd marks for italics and bold text, I had to introduce a new marker to the funcStringTextDecoration -->
     <!-- IDEA for v4: instead of reproducing a specific XML tree, I could treat the input as a literal string through the unparsed-text() function -->
 
     <!-- v3a: due to applying the formatting always to individual references and not reference groups, all fancy tricks for shortening the references are lost.-->
@@ -76,7 +77,7 @@
         <xsl:result-document
             href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempFootnotesXml.xml"
             method="xml">
-            <xsl:text>&lt;?xml-stylesheet type="text/xsl" href="../../DocxFinaliseCitations%20v1.xsl"?&gt;</xsl:text>
+            <xsl:text>&lt;?xml-stylesheet type="text/xsl" href="../../DocxFinaliseCitations%20v2.xsl"?&gt;</xsl:text>
             <xsl:apply-templates mode="mFn"/>
         </xsl:result-document>
     </xsl:template>
@@ -275,6 +276,7 @@
                                     <xsl:with-param name="pMode" select="'fn'"/>
                                     <xsl:with-param name="pCitedPages" select="@pages"/>
                                     <xsl:with-param name="pLibrary" select="$pgLibrary"/>
+                                    <xsl:with-param name="pOutputFormat" select="'docx'"/>
                                 </xsl:call-template>
                             </xsl:when>
                             <xsl:when test="@position='following'">
@@ -283,6 +285,7 @@
                                     <xsl:with-param name="pMode" select="'fn2'"/>
                                     <xsl:with-param name="pCitedPages" select="@pages"/>
                                     <xsl:with-param name="pLibrary" select="$pgLibrary"/>
+                                    <xsl:with-param name="pOutputFormat" select="'docx'"/>
                                 </xsl:call-template>
                             </xsl:when>
                             <xsl:when test="@position='ibid'">
@@ -320,6 +323,7 @@
                                 <xsl:with-param name="pCitID" select="."/>
                                 <xsl:with-param name="pMode" select="'fn'"/>
                                 <xsl:with-param name="pLibrary" select="$pgLibrary"/>
+                                <xsl:with-param name="pOutputFormat" select="'docx'"/>
                             </xsl:call-template>
                         </xsl:otherwise>
                     </xsl:choose>
