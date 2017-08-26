@@ -23,15 +23,18 @@
 
     <!-- this stylesheet takes a microsoft word .docx file as input, searches all text nodes (w:t) for Sente citation IDs wrapped in curly braces and returns the correctly formatted reference based on a master XML file containing the Sente library defined through pgLibrary
     - footnote or bibliography styles can be toggled via $pgMode -->
+    <!-- v2: produces two files which need further processing
+        1) an XML file containing reference Groups, which correspond to the groups of Citation IDs wrapped in curled braces in the original file
+        2) a copy of the original DOCX file containing references to the refGroup/@n of the first file instead of the Citation IDs -->
 
 
     <xsl:include href="/BachUni/projekte/XML/Functions/BachFunctions v2d.xsl"/>
 
     <xsl:param name="pgLibrary"
-        select="document('/BachUni/projekte/XML/Sente XML exports/all/secondarylit-131015.xml')"/>
+        select="document('/BachUni/projekte/XML/Sente XML exports/all/sources 130807.xml')"/>
 
     <!-- values: 'fn' or 'bibl' -->
-    <xsl:param name="pgMode" select="'bibl'"/>
+    <xsl:param name="pgMode" select="'fn'"/>
 
 
     <xsl:template match="node()">
@@ -50,17 +53,17 @@
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
             <xsl:variable name="vText" select="."/>
+            <xsl:variable name="vFnId" select="ancestor::w:footnote/@w:id"/>
+            <xsl:variable name="vRId" select="count(ancestor::w:r/preceding-sibling::w:r)"/>
             <xsl:choose>
                 <xsl:when test="contains($vText,'}') and contains($vText,'{')">
                     <xsl:for-each select="tokenize($vText,'\}')">
                         <xsl:variable name="vCitID" select="substring-after(.,'{')"/>
                         <xsl:variable name="vTextBefore" select="substring-before(.,'{')"/>
                         <xsl:value-of select="$vTextBefore"/>
-                        <xsl:call-template name="funcCitation">
-                            <xsl:with-param name="pCitID" select="$vCitID"/>
-                            <xsl:with-param name="pMode" select="$pgMode"/>
-                            <xsl:with-param name="pLibrary" select="$pgLibrary"/>
-                        </xsl:call-template>
+                        <xsl:if test="$vCitID!=''">
+                            <xsl:value-of select="concat('{',$vFnId,';',$vRId,';',position(),'}')"/>
+                        </xsl:if>
                         <xsl:if test="position()=last()">
                             <xsl:value-of select="."/>
                         </xsl:if>
@@ -74,30 +77,51 @@
     </xsl:template>
 
     <!-- test -->
-<!--    <xsl:template match="/">
-        <xsl:result-document href="TempBibliographyXml.xml" method="xml">
+    <xsl:template match="/">
+        <xsl:result-document href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempBibliographyXml.xml" method="xml">
             <xsl:copy-of select="$vRefs4a"/>
         </xsl:result-document>
-    </xsl:template>-->
+        <xsl:result-document href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempFootnotesXml.xml" method="xml">
+            <xsl:apply-templates/>
+        </xsl:result-document>
+    </xsl:template>
 
     <xsl:variable name="vRefs1">
-        <xsl:call-template name="tRefs"/>
-    </xsl:variable>
-    <!--<xsl:variable name="vRefs2">
-        <xsl:for-each select="tokenize(translate($vRefs1,'}{','; '),';')">
-            <xsl:element name="reference">
-                <xsl:attribute name="citation"
-                    select="normalize-space(if(contains(.,'@')) then(substring-before(.,'@')) else(.))"/>
-                <xsl:attribute name="pages"
-                    select="normalize-space(if(contains(.,'@')) then(substring-after(.,'@')) else())"/>
-                <xsl:value-of select="normalize-space(.)"/>
-            </xsl:element>
+        <!--<xsl:call-template name="tRefs"/>-->
+        <xsl:for-each select=".//w:t">
+            <xsl:variable name="vText" select="."/>
+            <xsl:variable name="vFnId" select="ancestor::w:footnote/@w:id"/>
+            <xsl:variable name="vRId" select="count(ancestor::w:r/preceding-sibling::w:r)"/>
+            <xsl:choose>
+                <xsl:when test="contains($vText,'}') and contains($vText,'{')">
+                    <xsl:for-each select="tokenize($vText,'\}')">
+                        <xsl:variable name="vCitID" select="substring-after(.,'{')"/>
+                        <xsl:if test="contains(.,'{')">
+                            <xsl:element name="refGroup">
+                                <xsl:attribute name="fnId" select="$vFnId"/>
+                                <xsl:attribute name="rId" select="$vRId"/>
+                                <xsl:attribute name="n" select="position()"/>
+                                <xsl:value-of select="$vCitID"/>
+                            </xsl:element>
+                        </xsl:if>
+                    </xsl:for-each>
+                </xsl:when>
+                <xsl:when test="contains($vText,'{')">
+                    <xsl:variable name="vTextAfter" select="substring-before(.,'{')"/>
+                    <xsl:value-of select="concat('{',$vTextAfter)"/>
+                </xsl:when>
+                <xsl:when test="contains($vText,'}')">
+                    <xsl:variable name="vTextBefore" select="substring-before(.,'}')"/>
+                    <xsl:value-of select="concat($vTextBefore,'}')"/>
+                </xsl:when>
+            </xsl:choose>
         </xsl:for-each>
-    </xsl:variable>-->
-    <!-- vRefs2a builds a tree of refGroups containing references with @citation and @pages -->
+    </xsl:variable>
     <xsl:variable name="vRefs2a">
-        <xsl:for-each select="tokenize(translate($vRefs1,'{',''),'\}')">
+        <!-- <xsl:for-each select="tokenize(translate($vRefs1,'{',''),'\}')"> -->
+        <xsl:for-each select="$vRefs1/refGroup">
             <xsl:element name="refGroup">
+                <xsl:apply-templates select="@*"/>
                 <xsl:choose>
                     <xsl:when test="contains(.,';')">
                         <xsl:for-each select="tokenize(.,';')">
@@ -142,34 +166,10 @@
         </xsl:for-each>
     </xsl:variable>
     <!-- vRefs3 establishes the position of the reference within the document: first, subsequent, ibid. -->
-    <!--<xsl:variable name="vRefs3">
-        <xsl:for-each select="$vRefs2/reference">
-            <xsl:copy>
-                <xsl:apply-templates select="@*"/>
-                <xsl:attribute name="position">
-                    <xsl:choose>
-                        <xsl:when test="preceding::reference/@citation=@citation">
-                            <xsl:choose>
-                                <xsl:when test="preceding::reference[1]=.">
-                                    <xsl:value-of select="'ibid'"/>
-                                </xsl:when>
-                                <xsl:otherwise>
-                                    <xsl:value-of select="'following'"/>
-                                </xsl:otherwise>
-                            </xsl:choose>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="'first'"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:attribute>
-                <xsl:value-of select="."/>
-            </xsl:copy>
-        </xsl:for-each>
-    </xsl:variable>-->
     <xsl:variable name="vRefs3a">
         <xsl:for-each select="$vRefs2b/refGroup">
             <xsl:copy>
+                <xsl:apply-templates select="@*"/>
                 <xsl:for-each select="./reference">
                     <xsl:sort select="@date"/>
                     <xsl:copy>
@@ -197,37 +197,11 @@
             </xsl:copy>
         </xsl:for-each>
     </xsl:variable>
-    <!--<xsl:variable name="vRefs4">
-        <xsl:for-each select="$vRefs3//reference">
-            <xsl:copy>
-                <xsl:apply-templates select="@*"/>
-                <xsl:choose>
-                    <xsl:when test="@position='first'">
-                        <xsl:call-template name="funcCitation">
-                            <xsl:with-param name="pCitID" select="@citation"/>
-                            <xsl:with-param name="pMode" select="'fn'"/>
-                            <xsl:with-param name="pCitedPages" select="@pages"/>
-                        </xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test="@position='following'">
-                        <xsl:call-template name="funcCitation">
-                            <xsl:with-param name="pCitID" select="@citation"/>
-                            <xsl:with-param name="pMode" select="'fn2'"/>
-                            <xsl:with-param name="pCitedPages" select="@pages"/>
-                        </xsl:call-template>
-                    </xsl:when>
-                    <xsl:when test="@position='ibid'">
-                        <xsl:text>Ibid.</xsl:text>
-                        <!-\- missing information on cited pages -\->
-                    </xsl:when>
-                </xsl:choose>
-            </xsl:copy>
-        </xsl:for-each>
-    </xsl:variable>-->
     <xsl:variable name="vRefs4a">
         <xsl:for-each select="$vRefs3a/refGroup">
             <xsl:copy>
-                <xsl:attribute name="n" select="position()"/>
+                <xsl:apply-templates select="@*"/>
+                <!--<xsl:attribute name="n" select="position()"/>-->
                 <xsl:for-each select="./reference">
                     <xsl:copy>
                         <xsl:apply-templates select="@*"/>
