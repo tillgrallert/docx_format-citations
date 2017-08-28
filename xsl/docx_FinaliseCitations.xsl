@@ -61,7 +61,7 @@
             <xsl:apply-templates/>
         </xsl:result-document>
         <!-- all other documents are saved to a temporary folder -->
-        <xsl:result-document href="../temp/DuplicateCitationIDs.html" method="html">
+        <xsl:result-document href="../html/DuplicateCitationIDs.html" method="html">
             <html>
                 <head>
                     <title>Errors <xsl:value-of select="format-date(current-date(),'[Y0000][M01][D01]')"/></title>
@@ -96,7 +96,7 @@
                 </body>
             </html>
         </xsl:result-document>
-        <xsl:result-document href="../temp/bibliography.html" method="html">
+        <xsl:result-document href="../html/bibliography.html" method="html">
             <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;</xsl:text>
             <html>
                 <head>
