@@ -44,7 +44,7 @@
 
 
 
-    <xsl:include href="../Functions/BachFunctions v3.xsl"/>
+    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>
 
     <!--<xsl:param name="pgLibrarySources"
         select="document('/BachUni/projekte/XML/Sente XML exports/all/SourcesClean 140401.xml')"/>
@@ -99,18 +99,11 @@
         </xsl:copy>
     </xsl:template>
     
-    <!-- mode mFn has been disabled -->
-    <!--<xsl:template match="node()" mode="mFn">
+    <xsl:template match="@* | node()" mode="mFn">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" mode="mFn"/>
         </xsl:copy>
     </xsl:template>
-
-    <xsl:template match="@*" mode="mFn">
-        <xsl:copy>
-            <xsl:apply-templates select="@*" mode="mFn"/>
-        </xsl:copy>
-    </xsl:template>-->
     <xsl:template match="@* | node()" mode="mFn2">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" mode="mFn2"/>
