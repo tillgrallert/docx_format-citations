@@ -6,10 +6,10 @@ date: 2017-08-26 14:43:04 +0200
 
 This repository contains XSLT stylesheets to overcome formatting problems with very large Sente libraries (16+ K references in my case), custom reference types and the capitalisation of Arabic transliterated in to Latin script.
 
-The workflow formats references in footnotes and produces a bibliography. It uses a Word .docx file as input that contains references as Sente Citation IDs in curly brackets. Everythings is done by XSLT for bibstyles / bibliographic references/ bibliographies. The workflow comprises two major steps:
+The workflow formats references in footnotes and produces a bibliography. It uses a Word .docx file as input that contains references as Sente Citation IDs in curly brackets. Everythings is done by XSLT for bibstyles / bibliographic references/ bibliographies. <!-- The workflow comprises two major steps:
 
 1. run clean-up
-2. run the formatting first on secondary literature, as the stylesheets will place those references, which they could not find, inside reference groups in front of the others. Thus, if run first on primary sources, the secondary literature will come first, even though references are otherwise sorted chronologically
+2. run the formatting first on secondary literature, as the stylesheets will place those references, which they could not find, inside reference groups in front of the others. Thus, if run first on primary sources, the secondary literature will come first, even though references are otherwise sorted chronologically -->
 
 ## workflow
 
@@ -21,7 +21,7 @@ The actual formatting is done via `funcCitation` linked through "BachFunctions v
     - *Output*: `FootnotesOriginalClean.xml`  
 
 2. Run [`xsl/docs_FormatCitations.xsl`](xsl/docs_FormatCitations.xsl)
-    - this stylesheet takes a `footnote.xml` inside the microsoft word .docx file as input, searches all text nodes `<w:t>`` for Sente citation IDs wrapped in curly braces and returns the correctly formatted reference based on a master XML file containing the Sente library defined through pgLibrary.
+    - this stylesheet takes a `footnote.xml` inside the microsoft word .docx file as input, searches all text nodes (`<w:t>`) for Sente citation IDs wrapped in curly braces and returns the correctly formatted reference based on a master XML file containing the Sente library defined through pgLibrary.
     - *Input*: `footnote.xml` or output of step 1.
     - *Output*:
         1. `FootnotesOriginal.xml`. This is just a direct copy of the input file to ensure data protection. 
