@@ -340,7 +340,7 @@
                                     <String></String>
                                 </field>
                                 <field name="inputXSLURL">
-                                    <String>file:/BachUni/projekte/XML/DocxCitations/DocxFootnotesCleanup%20v1.xsl</String>
+                                    <String>${pdu}/xsl/docx_FootnotesCleanup.xsl</String>
                                 </field>
                                 <field name="inputXMLURL">
                                     <String>${currentFileURL}</String>
@@ -379,7 +379,7 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="showInXMLPane">
-                                    <Boolean>true</Boolean>
+                                    <Boolean>false</Boolean>
                                 </field>
                                 <field name="showInSVGPane">
                                     <Boolean>false</Boolean>
@@ -448,7 +448,7 @@
                                     <String></String>
                                 </field>
                                 <field name="inputXSLURL">
-                                    <String>file:/BachUni/projekte/XML/DocxCitations/DocxFormatCitations%20v5.xsl</String>
+                                    <String>${pdu}/xsl/docx_FormatCitations.xsl</String>
                                 </field>
                                 <field name="inputXMLURL">
                                     <String>${currentFileURL}</String>
@@ -487,7 +487,7 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="showInXMLPane">
-                                    <Boolean>true</Boolean>
+                                    <Boolean>false</Boolean>
                                 </field>
                                 <field name="showInSVGPane">
                                     <Boolean>false</Boolean>
@@ -556,7 +556,7 @@
                                     <String></String>
                                 </field>
                                 <field name="inputXSLURL">
-                                    <String>file:/BachUni/projekte/XML/DocxCitations/DocxFinaliseCitations%20v2.xsl</String>
+                                    <String>${pdu}/xsl/docx_FinaliseCitations.xsl</String>
                                 </field>
                                 <field name="inputXMLURL">
                                     <String>${currentFileURL}</String>
@@ -595,7 +595,7 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="showInXMLPane">
-                                    <Boolean>true</Boolean>
+                                    <Boolean>false</Boolean>
                                 </field>
                                 <field name="showInSVGPane">
                                     <Boolean>false</Boolean>
@@ -801,18 +801,13 @@
             </serialized>
         </options>
     </meta>
-    <projectTree name="DocxSenteCitations.xpr">
+    <projectTree name="docx_SenteCitations.xpr">
         <folder masterFiles="true" name="Master Files">
             <file name="Functions/BachFunctions%20v3.xsl"/>
             <file name="Functions/CitationFunctions%20v2b.xsl"/>
         </folder>
-        <file name="DocxCitations/DocxExtractCitations%20v1.xsl"/>
-        <file name="DocxCitations/DocxFinaliseCitations%20v2.xsl"/>
-        <file name="DocxCitations/DocxFootnotesCleanup%20v1.xsl"/>
-        <file name="DocxCitations/DocxFormatCitations%20v5.xsl"/>
+        <folder path="xsl/"/>
         <file name="Tei2Html/Tei2Html%20Citations.xsl"/>
         <file name="Tei2Html/TEIReferences2Format.xml"/>
-        <file name="DocxCitations/Update%20Sente%20with%20Citations.xsl"/>
-        <file name="DocxCitations/XmlFormatCitations%20v1.xsl"/>
     </projectTree>
 </project>
