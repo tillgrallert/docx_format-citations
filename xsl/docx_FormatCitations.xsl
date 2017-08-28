@@ -62,12 +62,12 @@
 
     <xsl:template match="/">
         <xsl:result-document
-            href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/FootnotesOriginal.xml"
+            href="../temp/{format-date(current-date(),'[Y0000][M01][D01]')}/FootnotesOriginal.xml"
             method="xml">
             <xsl:apply-templates mode="mRep"/>
         </xsl:result-document>
         <xsl:result-document
-            href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempBibliographyXml.xml"
+            href="../temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempBibliographyXml.xml"
             method="xml">
             <xsl:element name="till:bibliography">
                 <!-- v3a: as I do not expect to use ibid. etc. for references to sources. -->
@@ -82,7 +82,7 @@
             </xsl:element>
         </xsl:result-document>
         <xsl:result-document
-            href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempFootnotesXml.xml"
+            href="../temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempFootnotesXml.xml"
             method="xml">
             <xsl:text disable-output-escaping="yes">&lt;?xml-stylesheet type="text/xsl" href="../../DocxFinaliseCitations%20v2.xsl"?&gt;</xsl:text>
 <!--            <xsl:variable name="vClean">
@@ -92,21 +92,15 @@
         </xsl:result-document>
     </xsl:template>
 
-
-    <xsl:template match="node()" mode="mRep">
+<!-- identity transformations -->
+    <xsl:template match="@* |node()" mode="mRep">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" mode="mRep"/>
         </xsl:copy>
     </xsl:template>
-
-    <xsl:template match="@*" mode="mRep">
-        <xsl:copy>
-            <xsl:apply-templates select="@*" mode="mRep"/>
-        </xsl:copy>
-    </xsl:template>
     
     <!-- mode mFn has been disabled -->
-    <xsl:template match="node()" mode="mFn">
+    <!--<xsl:template match="node()" mode="mFn">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" mode="mFn"/>
         </xsl:copy>
@@ -116,16 +110,10 @@
         <xsl:copy>
             <xsl:apply-templates select="@*" mode="mFn"/>
         </xsl:copy>
-    </xsl:template>
-    <xsl:template match="node()" mode="mFn2">
+    </xsl:template>-->
+    <xsl:template match="@* | node()" mode="mFn2">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" mode="mFn2"/>
-        </xsl:copy>
-    </xsl:template>
-    
-    <xsl:template match="@*" mode="mFn2">
-        <xsl:copy>
-            <xsl:apply-templates select="@*" mode="mFn2"/>
         </xsl:copy>
     </xsl:template>
     
