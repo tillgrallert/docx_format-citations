@@ -44,79 +44,24 @@
     -->
 
 
-    <xsl:include href="../Functions/BachFunctions v3.xsl"/>
+    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>
+ 
+    <xsl:variable name="vgTempBibl" select="document('../temp/bibliography-temporary.xml')"/>
     
-    <!-- these are part of BachFunctions v3 -->
-    <!--<xsl:param name="pgLibrarySources"
-        select="document('/BachUni/projekte/XML/Sente XML exports/all/SourcesClean 140401.xml')"/>
-    <xsl:param name="pgLibrarySecondary"
-        select="document('/BachUni/projekte/XML/Sente XML exports/all/SecondaryLitAmended 140401.xml')"/>-->
-    <xsl:variable name="vgTempBibl" select="document(concat('/BachUni/projekte/XML/DocxCitations/temp/',format-date(current-date(),'[Y0000][M01][D01]'),'/TempBibliographyXml.xml'))"/>
-    
-    <xsl:variable name="vTemplBiblProcessed">
-        <till:bibliography>
-        <xsl:for-each select="$vgTempBibl/till:bibliography/till:refGroup">
-            <xsl:copy>
-                <xsl:apply-templates select="@*"/>
-                <xsl:for-each select="./till:reference">
-                    <!-- v2 -->
-                    <xsl:choose>
-                        <xsl:when test="contains(.,'**not found**')">
-                            <xsl:if test="position()=1">
-                                <till:reference>
-                                    <w:r w:rsidRPr="00F9517">
-                                        <w:rPr>
-                                            <w:rFonts w:ascii="Gentium Plus" w:hAnsi="Gentium Plus"/>
-                                            <w:noProof/>
-                                            <w:sz w:val="18"/>
-                                            <w:szCs w:val="18"/>
-                                        </w:rPr>
-                                        <w:t><xsl:text>{</xsl:text><xsl:value-of select="@citation"/><xsl:value-of select="if(@pages!='') then(concat('@',@pages)) else()"/>
-                                            <xsl:for-each select="following-sibling::till:reference[contains(.,'**not found**')]"><xsl:text>; </xsl:text><xsl:value-of select="@citation"/><xsl:value-of select="if(@pages!='') then(concat('@',@pages)) else()"/></xsl:for-each><xsl:text>}</xsl:text>
-                                        </w:t></w:r>
-                                </till:reference>
-                            </xsl:if>
-                            <!--<xsl:if test="preceding-sibling::till:reference[1][contains(.,'**not found**')]"/>
-                            <xsl:if test="preceding-sibling::till:reference[1][not(contains(.,'**not found**'))]">
-                                <xsl:text disable-output-escaping="yes">&lt;till:reference&gt; &lt;w:r w:rsidRPr="00F9517"&gt;&lt;w:rPr&gt;&lt;w:rFonts w:ascii="Gentium Plus" w:hAnsi="Gentium Plus"/&gt;&lt;w:noProof/&gt;&lt;w:sz w:val="18"/&gt;&lt;w:szCs w:val="18"/&gt;&lt;/w:rPr&gt;&lt;w:t xml:space="preserve"&gt;{</xsl:text>
-                            </xsl:if>  
-                            
-                            <xsl:value-of select="."/>
-                            <xsl:if test="following-sibling::till:reference[1][contains(.,'**not found**')]">
-                                <xsl:text>; </xsl:text>
-                            </xsl:if>
-                            <xsl:if test="following-sibling::till:reference[1][not(contains(.,'**not found**'))]">
-                                <xsl:text disable-output-escaping="yes">}&lt;/w:t&gt;&lt;/w:r&gt;&lt;/till:reference&gt;</xsl:text>
-                            </xsl:if>-->
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:apply-templates select="." mode="mDocxFormatting"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </xsl:for-each>
-            </xsl:copy>
-        </xsl:for-each>
-        </till:bibliography>
-    </xsl:variable>
-
-    <xsl:template match="node()">
+    <!-- indentity transformation -->
+    <xsl:template match="@* | node()">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
     </xsl:template>
-
-    <xsl:template match="@*">
-        <xsl:copy>
-            <xsl:apply-templates select="@*"/>
-        </xsl:copy>
-    </xsl:template>
- 
     
     <xsl:template match="/">
-        <xsl:result-document href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/FootnotesFormatted.xml" method="xml">
+        <!-- the formatted footnotes should be saved in the same folder -->
+        <xsl:result-document href="footnotes-formatted.xml" method="xml">
             <xsl:apply-templates/>
         </xsl:result-document>
-        <xsl:result-document href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/DuplicateCitationIDs.html" method="html">
+        <!-- all other documents are saved to a temporary folder -->
+        <xsl:result-document href="../temp/DuplicateCitationIDs.html" method="html">
             <html>
                 <head>
                     <title>Errors <xsl:value-of select="format-date(current-date(),'[Y0000][M01][D01]')"/></title>
@@ -151,7 +96,7 @@
                 </body>
             </html>
         </xsl:result-document>
-        <xsl:result-document href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/Bibliography.html" method="html">
+        <xsl:result-document href="../temp/bibliography.html" method="html">
             <xsl:text disable-output-escaping="yes">&lt;!DOCTYPE html&gt;</xsl:text>
             <html>
                 <head>
@@ -210,7 +155,7 @@
             </html>
         </xsl:result-document>
     </xsl:template>
-    
+     
     <xsl:template match="w:t">
         <xsl:copy>
             <xsl:apply-templates select="@*"/>
@@ -348,5 +293,53 @@
             </xsl:choose>
         </xsl:copy>
     </xsl:template>
+
+    <xsl:variable name="vTemplBiblProcessed">
+        <till:bibliography>
+            <xsl:for-each select="$vgTempBibl/till:bibliography/till:refGroup">
+                <xsl:copy>
+                    <xsl:apply-templates select="@*"/>
+                    <xsl:for-each select="./till:reference">
+                        <!-- v2 -->
+                        <xsl:choose>
+                            <xsl:when test="contains(.,'**not found**')">
+                                <xsl:if test="position()=1">
+                                    <till:reference>
+                                        <w:r w:rsidRPr="00F9517">
+                                            <w:rPr>
+                                                <w:rFonts w:ascii="Gentium Plus" w:hAnsi="Gentium Plus"/>
+                                                <w:noProof/>
+                                                <w:sz w:val="18"/>
+                                                <w:szCs w:val="18"/>
+                                            </w:rPr>
+                                            <w:t><xsl:text>{</xsl:text><xsl:value-of select="@citation"/><xsl:value-of select="if(@pages!='') then(concat('@',@pages)) else()"/>
+                                                <xsl:for-each select="following-sibling::till:reference[contains(.,'**not found**')]"><xsl:text>; </xsl:text><xsl:value-of select="@citation"/><xsl:value-of select="if(@pages!='') then(concat('@',@pages)) else()"/></xsl:for-each><xsl:text>}</xsl:text>
+                                            </w:t></w:r>
+                                    </till:reference>
+                                </xsl:if>
+                                <!--<xsl:if test="preceding-sibling::till:reference[1][contains(.,'**not found**')]"/>
+                            <xsl:if test="preceding-sibling::till:reference[1][not(contains(.,'**not found**'))]">
+                                <xsl:text disable-output-escaping="yes">&lt;till:reference&gt; &lt;w:r w:rsidRPr="00F9517"&gt;&lt;w:rPr&gt;&lt;w:rFonts w:ascii="Gentium Plus" w:hAnsi="Gentium Plus"/&gt;&lt;w:noProof/&gt;&lt;w:sz w:val="18"/&gt;&lt;w:szCs w:val="18"/&gt;&lt;/w:rPr&gt;&lt;w:t xml:space="preserve"&gt;{</xsl:text>
+                            </xsl:if>  
+                            
+                            <xsl:value-of select="."/>
+                            <xsl:if test="following-sibling::till:reference[1][contains(.,'**not found**')]">
+                                <xsl:text>; </xsl:text>
+                            </xsl:if>
+                            <xsl:if test="following-sibling::till:reference[1][not(contains(.,'**not found**'))]">
+                                <xsl:text disable-output-escaping="yes">}&lt;/w:t&gt;&lt;/w:r&gt;&lt;/till:reference&gt;</xsl:text>
+                            </xsl:if>-->
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:apply-templates select="." mode="mDocxFormatting"/>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:for-each>
+                </xsl:copy>
+            </xsl:for-each>
+        </till:bibliography>
+    </xsl:variable>
+    
+    
 
 </xsl:stylesheet>
