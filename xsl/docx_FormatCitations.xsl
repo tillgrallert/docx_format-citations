@@ -42,14 +42,11 @@
 
     <!-- v1: footnote or bibliography styles can be toggled via $pgMode -->
 
+    <!-- link xslt functions: this works only with a local copy of functions_core.xsl -->
+<!--    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>-->
+    <xsl:include href="/Volumes/Dessau HD/BachUni/BachBibliothek/GitHub/xslt-functions/functions_core.xsl"/>
 
 
-    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>
-
-    <!--<xsl:param name="pgLibrarySources"
-        select="document('/BachUni/projekte/XML/Sente XML exports/all/SourcesClean 140401.xml')"/>
-    <xsl:param name="pgLibrarySecondary"
-        select="document('/BachUni/projekte/XML/Sente XML exports/all/SecondaryLitAmended 140401.xml')"/>-->
     <xsl:param name="pgLibrarySources"
         select="$pgSources"/>
     <xsl:param name="pgLibrarySecondary"
@@ -61,13 +58,14 @@
     <xsl:param name="pgMode" select="'fn'"/>-->
 
     <xsl:template match="/">
+        <!-- since this stylesheet is run on XML already located in a temporary folder, output and input folder should be the same -->
         <xsl:result-document
-            href="../temp/{format-date(current-date(),'[Y0000][M01][D01]')}/FootnotesOriginal.xml"
+            href="footnotes-original.xml"
             method="xml">
             <xsl:apply-templates mode="mRep"/>
         </xsl:result-document>
         <xsl:result-document
-            href="../temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempBibliographyXml.xml"
+            href="../temp/bibliography-temporary.xml"
             method="xml">
             <xsl:element name="till:bibliography">
                 <!-- v3a: as I do not expect to use ibid. etc. for references to sources. -->
@@ -82,9 +80,9 @@
             </xsl:element>
         </xsl:result-document>
         <xsl:result-document
-            href="../temp/{format-date(current-date(),'[Y0000][M01][D01]')}/TempFootnotesXml.xml"
+            href="../temp/footnotes-temporary.xml"
             method="xml">
-            <xsl:text disable-output-escaping="yes">&lt;?xml-stylesheet type="text/xsl" href="../../DocxFinaliseCitations%20v2.xsl"?&gt;</xsl:text>
+            <xsl:text disable-output-escaping="yes">&lt;?xml-stylesheet type="text/xsl" href="https://rawgit.com/tillgrallert/docx_format-citations/development/docx_FinaliseCitations.xsl"?&gt;</xsl:text>
 <!--            <xsl:variable name="vClean">
                 <xsl:apply-templates mode="mFn"/>
             </xsl:variable>-->
