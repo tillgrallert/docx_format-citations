@@ -24,26 +24,27 @@
 
     <!-- this stylesheet cleans up a footnote.xml inside a docx file: all separators between Sente Ids ("; "), which are sometimes made into separate nodes in the xml, are rejoined -->
 
-    <xsl:include href="../Functions/BachFunctions v3.xsl"/>
+    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>
     
     <xsl:param name="pFileNameInput"/>
 
 
     <xsl:template match="/">
-        <xsl:result-document href="/BachUni/projekte/XML/DocxCitations/temp/{format-date(current-date(),'[Y0000][M01][D01]')}/{$pFileNameInput} FootnotesOriginalClean.xml" method="xml">
+        <xsl:result-document href="../temp/{format-date(current-date(),'[Y0000][M01][D01]')}/{$pFileNameInput} FootnotesOriginalClean.xml" method="xml">
         <xsl:apply-templates mode="mFn"/>
         </xsl:result-document>
     </xsl:template>
     
-    <xsl:template match="node()" mode="mFn">
+    <!-- identity transformations -->
+    <xsl:template match="@* | node()" mode="mFn">
         <xsl:copy>
             <xsl:apply-templates select="@* | node()" mode="mFn"/>
         </xsl:copy>
     </xsl:template>
     
-    <xsl:template match="@*" mode="mFn">
+    <xsl:template match="@* | node()">
         <xsl:copy>
-            <xsl:apply-templates select="@*" mode="mFn"/>
+            <xsl:apply-templates select="@* | node()"/>
         </xsl:copy>
     </xsl:template>
     
@@ -91,18 +92,6 @@
                 </xsl:for-each>
             </xsl:variable>
             <xsl:value-of select="$vFn" disable-output-escaping="yes"/>
-        </xsl:copy>
-    </xsl:template>
-    
-    <xsl:template match="node()">
-        <xsl:copy>
-            <xsl:apply-templates select="@* | node()"/>
-        </xsl:copy>
-    </xsl:template>
-
-    <xsl:template match="@*">
-        <xsl:copy>
-            <xsl:apply-templates select="@*"/>
         </xsl:copy>
     </xsl:template>
 
