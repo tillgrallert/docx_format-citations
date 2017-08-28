@@ -17,20 +17,21 @@ The actual formatting is done via `funcCitation` linked through "BachFunctions v
 
 1. Run [`xsl/docx_FootnoteCleanup.xsl`](xsl/docx_FormatCitations.xsl)
     - this stylesheet cleans up a footnote.xml inside a docx file: all separators between Sente Ids ("; "), which are sometimes made into separate nodes in the xml, are rejoined.
-    - *Input*: `footnote.xml` inside the .docx package
-    - *Output*: `FootnotesOriginalClean.xml`  
+    - *Input*: `footnotes.xml` inside the .docx package
+    - *Output*: `_output/<filename>/<current date>/word/footnotes-clean.xml`  
 
 2. Run [`xsl/docs_FormatCitations.xsl`](xsl/docs_FormatCitations.xsl)
-    - this stylesheet takes a `footnote.xml` inside the microsoft word .docx file as input, searches all text nodes (`<w:t>`) for Sente citation IDs wrapped in curly braces and returns the correctly formatted reference based on a master XML file containing the Sente library defined through pgLibrary.
+    - this stylesheet takes a `footnote.xml` inside the microsoft word .docx file as input, searches all text nodes (`<w:t>`) for Sente citation IDs wrapped in curly braces and returns the correctly formatted reference based on a master XML file containing the Sente library defined through `pgLibrary`.
     - *Input*: `footnote.xml` or output of step 1.
+    - *Options*: the stylesheets asks whether it should scan for "Sources" or "Secondary literature". Run the formatting first on secondary literature, as the stylesheets will place those references, which they could not find, inside reference groups in front of the others. Thus, if run first on primary sources, the secondary literature will come first, even though references are otherwise sorted chronologically
     - *Output*:
         1. `FootnotesOriginal.xml`. This is just a direct copy of the input file to ensure data protection. 
-        2. `TempFootnotesXml.xml`: This file retains the structure and content of the input file, but replaces all Sente Citation IDs with private placeholder keys which allow me to produce "Ibid." and shortened references based on the position in the file.
-        3. `TempBibliographyXml.xml`: this file contains till:reference nodes with the correctly formatted references in a .docx compatible format. They are linked to the private keys in `TempFootnotesXml.xml`. 
+        2. `../temp/footnotes-temporary.xml`: This file retains the structure and content of the input file, but replaces all Sente Citation IDs with private placeholder keys which allow me to produce "Ibid." and shortened references based on the position in the file.
+        3. `../temp/bibliography-temporary.xml`: this file contains till:reference nodes with the correctly formatted references in a .docx compatible format. They are linked to the private keys in `TempFootnotesXml.xml`. 
             
 3. Run [`xsl/docx_FinaliseCitations.xsl`](xsl/docx_FinaliseCitations.xsl)
     - this stylesheet re-unites the information generated through DocxFormatCitations.xsl. It has to be performed on the TempFootnotesXml.xml. The stylesheet searches the file for my private citation IDs and looks them up in the corresponding TempBibliographyXml.xml.
-    - *Input*: `TempFootnotesXml.xml` from step 2. This file is already associated with the XSLT.
+    - *Input*: `footnotes-temporary.xml` from step 2. This file is already associated with the XSLT.
     - *Output*:
         1. `FootnotesFormatted.xml`: the contents of this file need to be saved as footnotes.xml inside the original .docx
         2. `DuplicateCitationIDs.html`: sort of a bug-report for duplicate reference IDs in the Sente library xml
