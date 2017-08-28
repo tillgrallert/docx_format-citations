@@ -46,7 +46,7 @@
 
     <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>
  
-    <xsl:variable name="vgTempBibl" select="document('../temp/bibliography-temporary.xml')"/>
+    <xsl:variable name="vgTempBibl" select="document(concat( substring-before(base-uri(),'footnotes-temporary'),'bibliography-temporary.xml'))"/>
     
     <!-- indentity transformation -->
     <xsl:template match="@* | node()">
@@ -56,8 +56,8 @@
     </xsl:template>
     
     <xsl:template match="/">
-        <!-- the formatted footnotes should be saved in the same folder -->
-        <xsl:result-document href="footnotes-formatted.xml" method="xml">
+        <!-- the formatted footnotes should be saved in the word folder -->
+        <xsl:result-document href="../word/footnotes-formatted.xml" method="xml">
             <xsl:apply-templates/>
         </xsl:result-document>
         <!-- all other documents are saved to a temporary folder -->
