@@ -30,6 +30,7 @@
 
 
     <xsl:template match="/">
+        <!-- a relative path seems to result in ending up at the oXygen application folder -->
         <xsl:result-document href="../temp/{format-date(current-date(),'[Y0000][M01][D01]')}/{$pFileNameInput} FootnotesOriginalClean.xml" method="xml">
         <xsl:apply-templates mode="mFn"/>
         </xsl:result-document>
