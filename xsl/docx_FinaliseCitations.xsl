@@ -44,7 +44,9 @@
     -->
 
 
-    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>
+    <!-- link xslt functions: this works only with a local copy of functions_core.xsl -->
+    <!--    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>-->
+    <xsl:include href="/Volumes/Dessau HD/BachUni/BachBibliothek/GitHub/xslt-functions/functions_core.xsl"/>
  
     <xsl:variable name="vgTempBibl" select="document(concat( substring-before(base-uri(),'footnotes-temporary'),'bibliography-temporary.xml'))"/>
     
