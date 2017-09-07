@@ -31,7 +31,7 @@
 
     <xsl:template match="/">
         <!-- a relative path seems to result in ending up at the oXygen application folder -->
-        <xsl:result-document href="/Volumes/Dessau HD/BachUni/BachBibliothek/GitHub/Sente/docx_format-citations/_output/{$pFileNameInput}/{format-date(current-date(),'[Y0000][M01][D01]')}/footnotes-clean.xml" method="xml">
+        <xsl:result-document href="/Volumes/Dessau HD/BachUni/BachBibliothek/GitHub/Sente/docx_format-citations/_output/{$pFileNameInput}/{format-date(current-date(),'[Y0000][M01][D01]')}/word/footnotes-clean.xml" method="xml">
         <xsl:apply-templates mode="mFn"/>
         </xsl:result-document>
     </xsl:template>
