@@ -82,7 +82,7 @@
         <xsl:result-document
             href="../temp/footnotes-temporary.xml"
             method="xml">
-            <xsl:text disable-output-escaping="yes">&lt;?xml-stylesheet type="text/xsl" href="https://rawgit.com/tillgrallert/docx_format-citations/development/docx_FinaliseCitations.xsl"?&gt;</xsl:text>
+            <xsl:text disable-output-escaping="yes">&lt;?xml-stylesheet type="text/xsl" href="https://rawgit.com/tillgrallert/docx_format-citations/master/xsl/docx_FinaliseCitations.xsl"?&gt;</xsl:text>
 <!--            <xsl:variable name="vClean">
                 <xsl:apply-templates mode="mFn"/>
             </xsl:variable>-->
