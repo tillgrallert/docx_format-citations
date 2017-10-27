@@ -806,6 +806,7 @@
             <file name="Functions/BachFunctions%20v3.xsl"/>
             <file name="Functions/CitationFunctions%20v2b.xsl"/>
         </folder>
+        <folder path="_output/"/>
         <folder path="xsl/"/>
         <file name="Tei2Html/Tei2Html%20Citations.xsl"/>
         <file name="Tei2Html/TEIReferences2Format.xml"/>
