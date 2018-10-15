@@ -62,11 +62,21 @@
         <xsl:result-document
             href="footnotes-original.xml"
             method="xml">
+            <xsl:if test="$p_debug = true()">
+                <xsl:message>
+                    <xsl:text>The input XML is replicated and saved as footnotes-original.xml</xsl:text>
+                </xsl:message>
+            </xsl:if>
             <xsl:apply-templates mode="mRep"/>
         </xsl:result-document>
         <xsl:result-document
             href="../temp/bibliography-temporary.xml"
             method="xml">
+            <xsl:if test="$p_debug = true()">
+                <xsl:message>
+                    <xsl:text>A temporary bibliography is about to be generated</xsl:text>
+                </xsl:message>
+            </xsl:if>
             <xsl:element name="till:bibliography">
                 <!-- v3a: as I do not expect to use ibid. etc. for references to sources. -->
                 <xsl:choose>
@@ -191,6 +201,11 @@
     <!-- vRefs1 creates a new till:refGroup for each group of Sente Ids found in the source file  -->
     <xsl:variable name="vRefs1">
         <!--<xsl:call-template name="tRefs"/>-->
+        <xsl:if test="$p_debug = true()">
+            <xsl:message>
+                <xsl:text>a new till:refGroup for each group of Sente Ids found in the source file</xsl:text>
+            </xsl:message>
+        </xsl:if>
         <xsl:for-each select=".//w:t">
             <xsl:variable name="vText" select="."/>
             <xsl:variable name="vFnId" select="ancestor::w:footnote/@w:id"/>
@@ -226,6 +241,11 @@
 
     <!-- vRefs2a breaks up till:refGroups that contain more than a single Sente Id and creates till:reference children -->
     <xsl:variable name="vRefs2a">
+        <xsl:if test="$p_debug = true()">
+            <xsl:message>
+                <xsl:text>till:refGroups that contain more than a single Sente Id are broken into till:reference children</xsl:text>
+            </xsl:message>
+        </xsl:if>
         <!-- <xsl:for-each select="tokenize(translate($vRefs1,'{',''),'\}')"> -->
         <xsl:for-each select="$vRefs1/till:refGroup">
             <xsl:element name="till:refGroup">
@@ -258,6 +278,11 @@
 
     <!-- vRef2b sorts all references inside a till:refGroup by publication date, for which this date must be pulled from the library file -->
     <xsl:variable name="vRefs2b">
+        <xsl:if test="$p_debug = true()">
+            <xsl:message>
+                <xsl:text>all references inside a till:refGroup are to be sorted by publication date, for which this date must be pulled from the library file</xsl:text>
+            </xsl:message>
+        </xsl:if>
         <xsl:for-each select="$vRefs2a/till:refGroup">
             <xsl:copy>
                 <xsl:apply-templates select="@*" mode="mFn"/>
@@ -268,6 +293,12 @@
                         <xsl:attribute name="date">
                             <xsl:for-each
                                 select="$pgLibrarySecondary/tss:senteContainer/tss:library/tss:references/tss:reference[./tss:characteristics/tss:characteristic[@name='Citation identifier']=$vCitId]">
+                                <xsl:if test="$p_debug = true()">
+                                    <xsl:message>
+                                        <xsl:text>Trying to get the publication date for </xsl:text>
+                                        <xsl:value-of select="$vCitId"/>
+                                    </xsl:message>
+                                </xsl:if>
                                 <xsl:value-of
                                     select="concat(./tss:dates/tss:date[@type='Publication']/@year,'-',format-number(./tss:dates/tss:date[@type='Publication']/@month,'00'),'-',format-number(./tss:dates/tss:date[@type='Publication']/@day,'00'))"
                                 />
@@ -281,11 +312,22 @@
 
     <!-- vRefs3 establishes the position of the reference within the document: first, subsequent, ibid. -->
     <xsl:variable name="vRefs3a">
+        <xsl:if test="$p_debug = true()">
+            <xsl:message>
+                <xsl:text>establishing the position of the reference within the document: first, subsequent, ibid.</xsl:text>
+            </xsl:message>
+        </xsl:if>
         <xsl:for-each select="$vRefs2b/till:refGroup">
             <xsl:copy>
                 <xsl:apply-templates select="@*" mode="mFn"/>
                 <xsl:for-each select="./till:reference">
                     <xsl:sort select="@date"/>
+                    <xsl:if test="$p_debug = true()">
+                        <xsl:message>
+                            <xsl:text>Current reference: </xsl:text>
+                            <xsl:value-of select="@citation"/>
+                        </xsl:message>
+                    </xsl:if>
                     <xsl:copy>
                         <xsl:apply-templates select="@*" mode="mFn"/>
                         <xsl:attribute name="position">
@@ -323,6 +365,12 @@
                         <xsl:apply-templates select="@*" mode="mFn"/>
                         <xsl:choose>
                             <xsl:when test="@position='first'">
+                                <xsl:if test="$p_debug = true()">
+                                    <xsl:message>
+                                        <xsl:text>Formatting first instance of: </xsl:text>
+                                        <xsl:value-of select="."/>
+                                    </xsl:message>
+                                </xsl:if>
                                 <xsl:call-template name="funcCitation">
                                     <xsl:with-param name="pCitID" select="@citation"/>
                                     <xsl:with-param name="pMode" select="'fn'"/>
@@ -332,6 +380,12 @@
                                 </xsl:call-template>
                             </xsl:when>
                             <xsl:when test="@position='following'">
+                                <xsl:if test="$p_debug = true()">
+                                    <xsl:message>
+                                        <xsl:text>Formatting second of following instance: </xsl:text>
+                                        <xsl:value-of select="."/>
+                                    </xsl:message>
+                                </xsl:if>
                                 <xsl:call-template name="funcCitation">
                                     <xsl:with-param name="pCitID" select="@citation"/>
                                     <xsl:with-param name="pMode" select="'fn2'"/>
@@ -380,6 +434,12 @@
                             </xsl:if>
                         </xsl:when>
                         <xsl:otherwise>
+                            <xsl:if test="$p_debug = true()">
+                                <xsl:message>
+                                    <xsl:text>Formatting reference: </xsl:text>
+                                    <xsl:value-of select="."/>
+                                </xsl:message>
+                            </xsl:if>
                             <xsl:call-template name="funcCitation">
                                 <xsl:with-param name="pCitID" select="."/>
                                 <xsl:with-param name="pMode" select="'fn'"/>
