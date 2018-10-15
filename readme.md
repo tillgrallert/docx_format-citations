@@ -30,7 +30,7 @@ The actual formatting is done via `funcCitation` linked through "BachFunctions v
         3. `temp/bibliography-temporary.xml`: this file contains till:reference nodes with the correctly formatted references in a .docx compatible format. They are linked to the private keys in `footnotes-temporary.xml`. 
             
 3. Run [`xsl/docx_FinaliseCitations.xsl`](xsl/docx_FinaliseCitations.xsl)
-    - this stylesheet re-unites the information generated through DocxFormatCitations.xsl. It has to be performed on the TempFootnotesXml.xml. The stylesheet searches the file for my private citation IDs and looks them up in the corresponding TempBibliographyXml.xml.
+    - this stylesheet re-unites the information generated through [`xsl/docs_FormatCitations.xsl`](xsl/docs_FormatCitations.xsl). It has to be performed on the `temp/footnotes-temporary.xml`. The stylesheet searches the file for my private citation IDs and looks them up in the corresponding `temp/bibliography-temporary.xml`.
     - *Input*: `temp/footnotes-temporary.xml` from step 2. This file is already associated with the XSLT.
     - *Output*:
         1. `word/footnotes-formatted.xml`: the contents of this file need to be saved as `footnotes.xml` inside the original .docx
