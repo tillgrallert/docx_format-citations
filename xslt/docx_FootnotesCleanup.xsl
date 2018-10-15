@@ -23,15 +23,16 @@
     <xsl:output method="xml" encoding="UTF-8" indent="yes" version="1.0"/>
 
     <!-- this stylesheet cleans up a footnote.xml inside a docx file: all separators between Sente Ids ("; "), which are sometimes made into separate nodes in the xml, are rejoined -->
-
-    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>
+    <!-- local paths work much better! -->
+    <xsl:include href="../../../xslt-functions/functions_core.xsl"/>
+<!--    <xsl:include href="https://rawgit.com/tillgrallert/xslt-functions/master/functions_core.xsl"/>-->
     
     <xsl:param name="pFileNameInput"/>
 
 
     <xsl:template match="/">
         <!-- a relative path seems to result in ending up at the oXygen application folder -->
-        <xsl:result-document href="/Volumes/Dessau HD/BachUni/BachBibliothek/GitHub/Sente/docx_format-citations/_output/{$pFileNameInput}/{format-date(current-date(),'[Y0000][M01][D01]')}/word/footnotes-clean.xml" method="xml">
+        <xsl:result-document href="/Volumes/Dessau HD/BachUni/BachBibliothek/GitHub/Sente/tss_format-citations-docx/_output/{$pFileNameInput}/{format-date(current-date(),'[Y0000][M01][D01]')}/word/footnotes-clean.xml" method="xml">
         <xsl:apply-templates mode="mFn"/>
         </xsl:result-document>
     </xsl:template>
