@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project version="17.0">
+<project version="19.1">
     <meta>
         <filters directoryPatterns="" filePatterns="" positiveFilePatterns="" showHiddenFiles="false"/>
         <options>
-            <serialized version="17.0" xml:space="preserve">
+            <serialized version="19.1" xml:space="preserve">
                 <serializableOrderedMap>
                     <entry>
                         <String>enable.project.master.files.support</String>
@@ -340,7 +340,7 @@
                                     <String></String>
                                 </field>
                                 <field name="inputXSLURL">
-                                    <String>${pdu}/xsl/docx_FootnotesCleanup.xsl</String>
+                                    <String>${pdu}/xslt/docx_FootnotesCleanup.xsl</String>
                                 </field>
                                 <field name="inputXMLURL">
                                     <String>${currentFileURL}</String>
@@ -379,7 +379,7 @@
                                     <Boolean>false</Boolean>
                                 </field>
                                 <field name="showInXMLPane">
-                                    <Boolean>false</Boolean>
+                                    <Boolean>true</Boolean>
                                 </field>
                                 <field name="showInSVGPane">
                                     <Boolean>false</Boolean>
@@ -448,7 +448,7 @@
                                     <String></String>
                                 </field>
                                 <field name="inputXSLURL">
-                                    <String>${pdu}/xsl/docx_FormatCitations.xsl</String>
+                                    <String>${pdu}/xslt/docx_FormatCitations.xsl</String>
                                 </field>
                                 <field name="inputXMLURL">
                                     <String>${currentFileURL}</String>
@@ -556,7 +556,7 @@
                                     <String></String>
                                 </field>
                                 <field name="inputXSLURL">
-                                    <String>${pdu}/xsl/docx_FinaliseCitations.xsl</String>
+                                    <String>${pdu}/xslt/docx_FinaliseCitations.xsl</String>
                                 </field>
                                 <field name="inputXMLURL">
                                     <String>${currentFileURL}</String>
@@ -807,7 +807,7 @@
             <file name="Functions/CitationFunctions%20v2b.xsl"/>
         </folder>
         <folder path="_output/"/>
-        <folder path="xsl/"/>
+        <folder path="xslt/"/>
         <file name="Tei2Html/Tei2Html%20Citations.xsl"/>
         <file name="Tei2Html/TEIReferences2Format.xml"/>
     </projectTree>
